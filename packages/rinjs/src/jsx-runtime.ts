@@ -1,15 +1,17 @@
-export type Component<P = Record<string, unknown>> = (props: P) => VNode;
+import type { Component } from "./component";
 
 export type VNode = {
   type: keyof HTMLElementTagNameMap | Component<Record<string, unknown>>;
   props: Record<string, unknown>;
-  children: Node[];
+  children: (VNode | Node)[];
 };
 
-function normalizeChildren(children: unknown[]): Node[] {
-  return children
-    .flat()
-    .map(c => (c instanceof Node ? c : document.createTextNode(String(c))));
+function normalizeChildren(children: unknown[]): (VNode | Node)[] {
+  return children.flat().map(c => {
+    if (c instanceof Node) return c;
+    if (typeof c === "object" && c !== null && "type" in c) return c as VNode;
+    return document.createTextNode(String(c));
+  });
 }
 
 export function jsx(
@@ -38,8 +40,10 @@ type ElementType = keyof HTMLElementTagNameMap;
 
 type DOMProps<K extends ElementType> = Omit<
   Partial<HTMLElementTagNameMap[K]>,
-  "children"
->;
+  "children" | "style"
+> & {
+  style?: Partial<CSSStyleDeclaration> | string;
+};
 
 type Props<K extends ElementType> = DOMProps<K> & {
   children?: JSX.Child | JSX.Child[];
@@ -47,7 +51,14 @@ type Props<K extends ElementType> = DOMProps<K> & {
 
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace JSX {
-  export type Child = Node | string | number | boolean | null | undefined;
+  export type Child =
+    | Node
+    | Element
+    | string
+    | number
+    | boolean
+    | null
+    | undefined;
 
   export interface ElementChildrenAttribute {
     children: {}; // eslint-disable-line @typescript-eslint/no-empty-object-type
@@ -58,7 +69,7 @@ export namespace JSX {
   export interface Element {
     type: ElementType | Component<Record<string, unknown>>;
     props: Record<string, unknown>;
-    children: Node[];
+    children: (VNode | Node)[];
   }
 
   export type IntrinsicElements = {

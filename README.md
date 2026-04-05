@@ -157,12 +157,12 @@ array → flatten recursively
 
 ---
 
-## Mount Engine
+## Render Engine
 
 Attach component tree to container:
 
 ```ts
-mount(App, document.body);
+render(<App />, document.body);
 ```
 
 ---
@@ -250,12 +250,12 @@ Usage:
 
 # Rendering
 
-Mount application:
+Render application:
 
 ```ts
-import { mount } from "rinjs";
+import { render } from "rinjs";
 
-mount(App, document.getElementById("app"));
+render(<App />, document.getElementById("app"));
 ```
 
 ---
@@ -303,7 +303,7 @@ Example `tsconfig.json`:
 rinjs/
  ├── jsx-runtime.ts
  ├── renderer.ts
- ├── mount.ts
+ ├── render.ts
  ├── component.ts
  └── index.ts
 ```
