@@ -1,10 +1,4 @@
-import type { Component } from "./component";
-
-export type VNode = {
-  type: keyof HTMLElementTagNameMap | Component<Record<string, unknown>>;
-  props: Record<string, unknown>;
-  children: (VNode | Node)[];
-};
+import type { VNode } from "./types";
 
 function normalizeChildren(children: unknown[]): (VNode | Node)[] {
   return children.flat().map(c => {

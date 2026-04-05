@@ -1,4 +1,3 @@
 export * from "./jsx-runtime";
-export * from "./component";
-export * from "./renderer";
-export * from "./render";
+export * from "./types";
+export * from "./mount";

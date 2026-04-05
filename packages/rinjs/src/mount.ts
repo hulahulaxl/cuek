@@ -1,5 +1,4 @@
-import type { VNode } from "./jsx-runtime";
-import type { Component } from "./component";
+import type { VNode, Component } from "./types";
 
 export function renderNode(vnode: VNode): Node {
   if (typeof vnode.type === "function") {
@@ -43,4 +42,8 @@ export function renderNode(vnode: VNode): Node {
   });
 
   return el;
+}
+
+export function mount(vnode: VNode, container: HTMLElement = document.body) {
+  container.appendChild(renderNode(vnode));
 }

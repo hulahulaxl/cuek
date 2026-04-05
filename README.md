@@ -157,12 +157,12 @@ array → flatten recursively
 
 ---
 
-## Render Engine
+## Mount Engine
 
 Attach component tree to container:
 
 ```ts
-render(<App />, document.body);
+mount(<App />, document.body);
 ```
 
 ---
@@ -248,14 +248,112 @@ Usage:
 
 ---
 
-# Rendering
+# Rendering & Reactivity
 
-Render application:
+RinJS provides three primary APIs for rendering and updating the DOM explicitly.
+
+### Initial Mounting
+
+Mount your root application to the DOM:
 
 ```ts
-import { render } from "rinjs";
+import { mount } from "rinjs";
 
-render(<App />, document.getElementById("app"));
+mount(<App />, document.getElementById("app"));
+```
+
+### Targeted Rerendering
+
+RinJS does not use a Virtual DOM with an automated scheduler. Instead, reactivity is explicit. You can precisely control what updates by using `rerender`:
+
+1. **Rerender by Component Reference**: Globally updates all active instances of a specific component function on the page.
+
+```ts
+import { rerender } from "rinjs";
+
+function Header() {
+  return <header>Local Time: {new Date().toLocaleTimeString()}</header>;
+}
+
+// Somewhere else, trigger an update for all <Header /> components:
+rerender(Header);
+```
+
+2. **Rerender by Key string**: Updates specific elements or components tagged with an explicit `$key` property. Useful for highly specific or targeted updates.
+
+```ts
+import { rerender } from "rinjs";
+
+// Component or element rendered with <section $key="user-stats" />
+rerender("user-stats");
+```
+
+3. **Rerender by Component Context**: Renders solely the specific component instance issuing the call. To ensure zero-magic predictability, RinJS passes a reliable execution context as the second argument to any component.
+
+```tsx
+function Dropdown(props, ctx) {
+  let isOpen = false;
+
+  const toggle = () => {
+    isOpen = !isOpen;
+    ctx.rerender(); // Triggers update ONLY for this exact dropdown instance
+  };
+  
+  // Return a closure that handles future re-renders
+  return () => (
+    <div>
+      <button onclick={toggle}>Toggle</button>
+      {isOpen && <div>Content</div>}
+    </div>
+  );
+}
+```
+
+### Demounting & Cleanup
+
+To prevent memory leaks when components are removed dynamically, RinJS provides an explicit `unmount` API to clean up active trees and unbind listeners.
+
+```ts
+import { unmount } from "rinjs";
+
+// Tear down a whole container
+unmount(document.getElementById("app"));
+
+// Tear down all instances of a specific Component
+unmount(Header);
+
+// Tear down elements tagged with a specific key
+unmount("user-stats");
+```
+
+---
+
+# Lifecycles
+
+While RinJS eliminates complex implicit lifecycle scheduling, you will still need to perform side-effects predictably (like data fetching or WebGL rendering) when working with direct DOM mutations. 
+
+Because component functions are executed only once to initialize state, your `ctx.onMount` logic is inherently immune to infinite-loop fetch bugs. RinJS saves and executes the inner closure returned by your component on every `ctx.rerender`:
+
+```tsx
+function APIDataLoader(props, ctx) {
+  let data = null;
+
+  // Triggers precisely once after the element first hits the DOM.
+  ctx.onMount(() => {
+    fetch("/api/data").then(async (res) => {
+      data = await res.json();
+      ctx.rerender(); // Trigger local UI update
+    });
+  });
+
+  // Triggers precisely once when unmount() destroys this node.
+  ctx.onUnmount(() => {
+    console.log("Cleaning up active subscriptions...");
+  });
+
+  // The rendering logic closure dynamically evaluated on every update
+  return () => <div>{data ? data : "Loading..."}</div>;
+}
 ```
 
 ---
@@ -263,15 +361,17 @@ render(<App />, document.getElementById("app"));
 # Example Counter
 
 ```tsx
-function Counter() {
+function Counter(props, ctx) {
+  // Initialization - runs exactly once
   let count = 0;
 
   const increment = () => {
     count++;
-    rerender();
+    ctx.rerender(); // rerender self only
   };
 
-  return (
+  // Rendering - execution closure bound to rerender
+  return () => (
     <div>
       <p>{count}</p>
       <button onclick={increment}>Increment</button>
@@ -302,9 +402,8 @@ Example `tsconfig.json`:
 ```
 rinjs/
  ├── jsx-runtime.ts
- ├── renderer.ts
- ├── render.ts
- ├── component.ts
+ ├── types.ts
+ ├── mount.ts
  └── index.ts
 ```
 

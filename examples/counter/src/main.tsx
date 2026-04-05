@@ -1,6 +1,6 @@
-import { render } from "rinjs";
+import { mount } from "rinjs";
 
-render(
+mount(
   <div style={{ background: "black", color: "white" }}>
     <p>Hellow</p>
     <div>First</div>
