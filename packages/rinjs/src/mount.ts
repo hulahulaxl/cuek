@@ -1,5 +1,7 @@
 import type { Component, ComponentContext, VNode } from "./types";
 
+import { patchDOM } from "./patch";
+
 export function renderNode(vnode: VNode): Node {
   if (typeof vnode.type === "function") {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -12,11 +14,17 @@ export function renderNode(vnode: VNode): Node {
       rerender: () => {
         if (!renderClosure) return;
         const newVNode = renderClosure();
-        const newNode = renderNode(newVNode);
-        if (currentNode && currentNode.parentNode) {
-          currentNode.parentNode.replaceChild(newNode, currentNode);
-        }
-        currentNode = newNode;
+        
+        // Retrieve the stored VNode footprint off the physical DOM node
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const oldVNode = (currentNode as any)._vnode as VNode;
+        
+        // Seamlessly patch the physical DOM node recursively
+        currentNode = patchDOM(currentNode, oldVNode, newVNode);
+        
+        // Update the footprint to match the newly evaluated layout
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (currentNode as any)._vnode = newVNode;
       },
       onMount: (cb) => {
         mountCallbacks.push(cb);
@@ -37,6 +45,8 @@ export function renderNode(vnode: VNode): Node {
     }
 
     currentNode = renderNode(initialVNode);
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (currentNode as any)._vnode = initialVNode;
 
     // Call mount callbacks safely after the stack clears
     setTimeout(() => {

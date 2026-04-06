@@ -10,7 +10,7 @@ It focuses on:
 - explicit rendering flow
 - strong typing
 - minimal abstraction
-- no virtual DOM
+- minimal virtual DOM
 
 RinJS targets developers who want component-based UI without framework overhead.
 
@@ -60,9 +60,11 @@ No classes. No decorators. No lifecycle APIs.
 
 ---
 
-## Direct DOM Rendering
+## Transparent Virtual DOM
 
-RinJS does not use a virtual DOM.
+RinJS builds minimal Virtual DOM templates strictly to power local, fast DOM patching. 
+
+> **Note:** RinJS may migrate entirely to an Ahead-Of-Time (AOT) compiler architecture in the future. This would completely eliminate the Virtual DOM and DOM-patching engines, allowing for true direct-to-DOM updates like Svelte or SolidJS, while preserving our explicit component execution model.
 
 Rendering pipeline:
 
@@ -171,7 +173,7 @@ mount(<App />, document.body);
 
 | Feature           | RinJS      | React      |
 | ----------------- | ---------- | ---------- |
-| Virtual DOM       | No         | Yes        |
+| Virtual DOM       | Minimal    | Yes        |
 | Scheduler         | No         | Yes        |
 | Hooks             | Optional   | Core       |
 | Lifecycle         | No         | Yes        |
@@ -264,7 +266,7 @@ mount(<App />, document.getElementById("app"));
 
 ### Targeted Rerendering
 
-RinJS does not use a Virtual DOM with an automated scheduler. Instead, reactivity is explicit. You can precisely control what updates by using `rerender`:
+RinJS does not use an automated Virtual DOM scheduler. Instead, reactivity is explicit and localized. You precisely dictate when updates generate patching routines by using `rerender`:
 
 1. **Rerender by Component Reference**: Globally updates all active instances of a specific component function on the page.
 
