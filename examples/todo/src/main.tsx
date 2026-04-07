@@ -103,9 +103,8 @@ function TodoApp(_props: Record<string, unknown>, ctx: ComponentContext) {
           type="text"
           placeholder="What needs to be done?"
           style={{ flexGrow: "1", padding: "10px", border: "none", borderRadius: "4px 0 0 4px" }}
-          onkeypress={(e) => {
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            if ((e as any).key === "Enter") addTodo();
+          onkeydown={(e: KeyboardEvent) => {
+            if (e.key === "Enter") addTodo();
           }}
         />
         <button
