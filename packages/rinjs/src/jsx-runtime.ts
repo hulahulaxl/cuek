@@ -1,11 +1,14 @@
 import type { ComponentContext, VNode } from "./types";
 
 function normalizeChildren(children: unknown[]): (VNode | Node)[] {
-  return children.flat().map(c => {
-    if (c instanceof Node) return c;
-    if (typeof c === "object" && c !== null && "type" in c) return c as VNode;
-    return document.createTextNode(String(c));
-  });
+  return children
+    .flat()
+    .filter(c => c != null && typeof c !== "boolean")
+    .map(c => {
+      if (c instanceof Node) return c;
+      if (typeof c === "object" && c !== null && "type" in c) return c as VNode;
+      return document.createTextNode(String(c));
+    });
 }
 
 export function jsx(
@@ -54,7 +57,8 @@ export namespace JSX {
     | number
     | boolean
     | null
-    | undefined;
+    | undefined
+    | Child[];
 
   export interface ElementChildrenAttribute {
     children: {}; // eslint-disable-line @typescript-eslint/no-empty-object-type

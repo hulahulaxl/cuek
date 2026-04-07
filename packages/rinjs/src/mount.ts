@@ -81,10 +81,22 @@ export function renderNode(vnode: VNode): Node {
       continue;
     }
 
+    if (typeof value === "boolean") {
+      if (key in el) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (el as any)[key] = value;
+      }
+      if (value) {
+        el.setAttribute(key, "");
+      } else {
+        el.removeAttribute(key);
+      }
+      continue;
+    }
+
     if (
       typeof value === "string" ||
-      typeof value === "number" ||
-      typeof value === "boolean"
+      typeof value === "number"
     ) {
       el.setAttribute(key, String(value));
     }

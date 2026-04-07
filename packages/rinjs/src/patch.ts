@@ -49,12 +49,28 @@ function updateProps(
       continue;
     }
 
+    if (typeof newValue === "boolean") {
+      if (oldValue !== newValue) {
+        if (key in el) {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+          (el as any)[key] = newValue;
+        }
+        if (newValue) {
+          el.setAttribute(key, "");
+        } else {
+          el.removeAttribute(key);
+        }
+      }
+      continue;
+    }
+
     if (
       typeof newValue === "string" ||
-      typeof newValue === "number" ||
-      typeof newValue === "boolean"
+      typeof newValue === "number"
     ) {
-      el.setAttribute(key, String(newValue));
+      if (oldValue !== newValue) {
+        el.setAttribute(key, String(newValue));
+      }
     }
   }
 }
