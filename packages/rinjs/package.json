@@ -15,16 +15,19 @@
   },
   "exports": {
     ".": {
+      "development": "./src/index.ts",
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
     },
     "./jsx-runtime": {
+      "development": "./src/jsx-runtime.ts",
       "types": "./dist/jsx-runtime.d.ts",
       "import": "./dist/jsx-runtime.js",
       "require": "./dist/jsx-runtime.cjs"
     },
     "./jsx-dev-runtime": {
+      "development": "./src/jsx-runtime.ts",
       "types": "./dist/jsx-runtime.d.ts",
       "import": "./dist/jsx-runtime.js",
       "require": "./dist/jsx-runtime.cjs"
