@@ -1,0 +1,102 @@
+import type { ComponentContext, VNode } from "./types";
+
+function normalizeChildren(children: unknown[]): (VNode | Node)[] {
+  const result: (VNode | Node)[] = [];
+  function flatten(arr: unknown[]) {
+    for (let i = 0; i < arr.length; i++) {
+      const c = arr[i];
+      if (Array.isArray(c)) {
+        flatten(c);
+      } else if (c != null && typeof c !== "boolean") {
+        if (c instanceof Node) {
+          result.push(c);
+        } else if (typeof c === "object" && "type" in c) {
+          result.push(c as VNode);
+        } else {
+          result.push(document.createTextNode(String(c)));
+        }
+      }
+    }
+  }
+  flatten(children);
+  return result;
+}
+
+export function jsx(
+  type: VNode["type"],
+  props: Record<string, unknown> | null,
+  key?: string | number
+): VNode {
+  const { children, ...rest } = props ?? {};
+  if (key != null) {
+    rest.key = key;
+  }
+
+  return {
+    type,
+    props: rest,
+    children: normalizeChildren(
+      children === undefined
+        ? []
+        : Array.isArray(children)
+          ? children
+          : [children]
+    )
+  };
+}
+
+export { jsx as jsxs };
+export { jsx as jsxDEV };
+
+type ElementType = keyof HTMLElementTagNameMap;
+
+type DOMProps<K extends ElementType> = Omit<
+  Partial<HTMLElementTagNameMap[K]>,
+  "children" | "style"
+> & {
+  style?: Partial<CSSStyleDeclaration> | string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ref?: (el: any) => void;
+  key?: string | number;
+};
+
+type Props<K extends ElementType> = DOMProps<K> & {
+  children?: JSX.Child | JSX.Child[];
+};
+
+// eslint-disable-next-line @typescript-eslint/no-namespace
+export namespace JSX {
+  export type Child =
+    | Node
+    | Element
+    | string
+    | number
+    | boolean
+    | null
+    | undefined
+    | Child[];
+
+  export interface ElementChildrenAttribute {
+    children: {}; // eslint-disable-line @typescript-eslint/no-empty-object-type
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export type ElementType = string | Component<any>;
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  export type Component<P = any> = (
+    props: P & { group?: string },
+    ctx: ComponentContext
+  ) => () => Element;
+
+  export interface Element {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    type: ElementType | Component<any>;
+    props: Record<string, unknown>;
+    children: (VNode | Node)[];
+  }
+
+  export type IntrinsicElements = {
+    [K in keyof HTMLElementTagNameMap]: Props<K>;
+  };
+}

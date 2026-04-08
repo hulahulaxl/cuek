@@ -1,3 +1,5 @@
-export function abc(x: number): number {
-  return 10 * x;
-}
+export * from "./jsx-runtime";
+export * from "./types";
+export * from "./mount";
+export * from "./unmount";
+export * from "./rerender";
