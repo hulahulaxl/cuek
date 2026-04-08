@@ -1,5 +1,5 @@
 import type { VNode } from "./types";
-import { renderNode } from "./mount";
+import { renderNode, eventProxy } from "./mount";
 import { executeUnmount } from "./unmount";
 
 function updateProps(
@@ -11,10 +11,11 @@ function updateProps(
   for (const key in oldProps) {
     if (!(key in newProps)) {
       if (key.startsWith("on") && typeof oldProps[key] === "function") {
-        el.removeEventListener(
-          key.slice(2).toLowerCase(),
-          oldProps[key] as EventListener
-        );
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const anyEl = el as any;
+        if (anyEl._rinListeners) {
+          anyEl._rinListeners[key.slice(2).toLowerCase()] = undefined;
+        }
       } else if (key === "style") {
         el.style.cssText = "";
       } else {
@@ -32,10 +33,11 @@ function updateProps(
 
     if (key.startsWith("on") && typeof newValue === "function") {
       const eventName = key.slice(2).toLowerCase();
-      if (typeof oldValue === "function") {
-        el.removeEventListener(eventName, oldValue as EventListener);
-      }
-      el.addEventListener(eventName, newValue as EventListener);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const anyEl = el as any;
+      if (!anyEl._rinListeners) anyEl._rinListeners = {};
+      if (!anyEl._rinListeners[eventName]) el.addEventListener(eventName, eventProxy);
+      anyEl._rinListeners[eventName] = newValue;
       continue;
     }
 
@@ -100,8 +102,13 @@ export function patchDOM(
       const rerenderFn = (domNode as any)._componentRerender;
 
       if (existingProps && rerenderFn) {
-        // Erase old prop values natively
-        for (const key in existingProps) delete existingProps[key];
+        // Erase old prop values dynamically without V8 dictionary de-opts!
+        // We set to undefined instead of using 'delete' natively.
+        for (const key in existingProps) {
+          if (!(key in newVNode.props)) {
+            existingProps[key] = undefined;
+          }
+        }
         // Inject new prop values natively
         for (const key in newVNode.props) existingProps[key] = newVNode.props[key];
         
@@ -124,8 +131,8 @@ export function patchDOM(
   const oldChildren = oldVNode.children;
   const newChildren = newVNode.children;
 
-  const oldKeyed = new Map<string, { vnode: VNode; node: Node }>();
-  const oldUnkeyed: ({ vnode: VNode | Node; node: Node } | null)[] = [];
+  let oldKeyed: Map<string, { vnode: VNode; node: Node }> | undefined;
+  let oldUnkeyed: ({ vnode: VNode | Node; node: Node } | null)[] | undefined;
 
   for (let i = 0; i < oldChildren.length; i++) {
     const oldChild = oldChildren[i];
@@ -139,11 +146,13 @@ export function patchDOM(
       oldChild.props &&
       oldChild.props.key != null
     ) {
+      if (!oldKeyed) oldKeyed = new Map();
       oldKeyed.set(String(oldChild.props.key), {
         vnode: oldChild as VNode,
         node: childNode
       });
     } else {
+      if (!oldUnkeyed) oldUnkeyed = [];
       oldUnkeyed.push({ vnode: oldChild, node: childNode });
     }
   }
@@ -163,14 +172,14 @@ export function patchDOM(
       newChild.props.key != null
     ) {
       const key = String(newChild.props.key);
-      const match = oldKeyed.get(key);
-      if (match) {
+      const match = oldKeyed?.get(key);
+      if (match && oldKeyed) {
         matchedNode = match.node;
         matchedOldVNode = match.vnode;
         oldKeyed.delete(key);
       }
     } else {
-      if (unkeyedIndex < oldUnkeyed.length) {
+      if (oldUnkeyed && unkeyedIndex < oldUnkeyed.length) {
         const match = oldUnkeyed[unkeyedIndex];
         if (match) {
           matchedNode = match.node;
@@ -215,16 +224,20 @@ export function patchDOM(
     }
   }
 
-  oldKeyed.forEach(match => {
-    executeUnmount(match.node);
-    if (match.node.parentNode) match.node.parentNode.removeChild(match.node);
-  });
-
-  for (let i = 0; i < oldUnkeyed.length; i++) {
-    const match = oldUnkeyed[i];
-    if (match) {
+  if (oldKeyed) {
+    oldKeyed.forEach(match => {
       executeUnmount(match.node);
       if (match.node.parentNode) match.node.parentNode.removeChild(match.node);
+    });
+  }
+
+  if (oldUnkeyed) {
+    for (let i = 0; i < oldUnkeyed.length; i++) {
+      const match = oldUnkeyed[i];
+      if (match) {
+        executeUnmount(match.node);
+        if (match.node.parentNode) match.node.parentNode.removeChild(match.node);
+      }
     }
   }
 

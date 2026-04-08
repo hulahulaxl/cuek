@@ -3,6 +3,14 @@ import { register } from "./rerender";
 
 import { patchDOM } from "./patch";
 
+export function eventProxy(this: Element, e: Event) {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const listeners = (this as any)._rinListeners;
+  if (listeners && listeners[e.type]) {
+    listeners[e.type](e);
+  }
+}
+
 export function renderNode(vnode: VNode): Node {
   if (typeof vnode.type === "function") {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,7 +84,11 @@ export function renderNode(vnode: VNode): Node {
 
     if (key.startsWith("on") && typeof value === "function") {
       const eventName = key.slice(2).toLowerCase();
-      el.addEventListener(eventName, value as EventListener);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const anyEl = el as any;
+      if (!anyEl._rinListeners) anyEl._rinListeners = {};
+      if (!anyEl._rinListeners[eventName]) el.addEventListener(eventName, eventProxy);
+      anyEl._rinListeners[eventName] = value;
       continue;
     }
 

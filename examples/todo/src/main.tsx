@@ -32,6 +32,7 @@ function TodoItem(props: TodoItemProps) {
         onchange={() => props.toggleTodo(props.todo.id)}
         style={{ marginRight: "10px", cursor: "pointer" }}
       />
+      <input type="text" placeholder="Type here..." />.
       <span style={{ flexGrow: "1" }}>{props.todo.text}</span>
       <button
         onclick={() => props.deleteTodo(props.todo.id)}

@@ -1,14 +1,25 @@
 import type { ComponentContext, VNode } from "./types";
 
 function normalizeChildren(children: unknown[]): (VNode | Node)[] {
-  return children
-    .flat()
-    .filter(c => c != null && typeof c !== "boolean")
-    .map(c => {
-      if (c instanceof Node) return c;
-      if (typeof c === "object" && c !== null && "type" in c) return c as VNode;
-      return document.createTextNode(String(c));
-    });
+  const result: (VNode | Node)[] = [];
+  function flatten(arr: unknown[]) {
+    for (let i = 0; i < arr.length; i++) {
+      const c = arr[i];
+      if (Array.isArray(c)) {
+        flatten(c);
+      } else if (c != null && typeof c !== "boolean") {
+        if (c instanceof Node) {
+          result.push(c);
+        } else if (typeof c === "object" && "type" in c) {
+          result.push(c as VNode);
+        } else {
+          result.push(document.createTextNode(String(c)));
+        }
+      }
+    }
+  }
+  flatten(children);
+  return result;
 }
 
 export function jsx(
