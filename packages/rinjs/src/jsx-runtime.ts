@@ -13,9 +13,13 @@ function normalizeChildren(children: unknown[]): (VNode | Node)[] {
 
 export function jsx(
   type: VNode["type"],
-  props: Record<string, unknown> | null
+  props: Record<string, unknown> | null,
+  key?: string | number
 ): VNode {
   const { children, ...rest } = props ?? {};
+  if (key != null) {
+    rest.key = key;
+  }
 
   return {
     type,

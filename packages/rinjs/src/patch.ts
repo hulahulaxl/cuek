@@ -90,12 +90,28 @@ export function patchDOM(
   }
 
   // Components inherently hold their own closure states upon creation.
-  // Passing new props statically down to a previously instantiated RinJS
-  // closure is unsupported by design, so encountering a nested component
-  // forces a full replacement, keeping the architecture purely localized.
+  // Instead of destroying the component, we mutate its props reference
+  // so the inner closure correctly renders the new data natively!
   if (typeof newVNode.type === "function") {
+    if (oldVNode.type === newVNode.type) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const existingProps = (domNode as any)._componentProps;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const rerenderFn = (domNode as any)._componentRerender;
+
+      if (existingProps && rerenderFn) {
+        // Erase old prop values natively
+        for (const key in existingProps) delete existingProps[key];
+        // Inject new prop values natively
+        for (const key in newVNode.props) existingProps[key] = newVNode.props[key];
+        
+        return rerenderFn();
+      }
+    }
+
     const newNode = renderNode(newVNode);
     if (domNode.parentNode) {
+      executeUnmount(domNode);
       domNode.parentNode.replaceChild(newNode, domNode);
     }
     return newNode;

@@ -14,7 +14,7 @@ type TodoItemProps = {
   deleteTodo: (id: number) => void;
 };
 
-function TodoItem({ todo, toggleTodo, deleteTodo }: TodoItemProps) {
+function TodoItem(props: TodoItemProps) {
   return () => (
     <li
       style={{
@@ -22,19 +22,19 @@ function TodoItem({ todo, toggleTodo, deleteTodo }: TodoItemProps) {
         alignItems: "center",
         padding: "10px",
         borderBottom: "1px solid #333",
-        textDecoration: todo.completed ? "line-through" : "none",
-        color: todo.completed ? "#888" : "white"
+        textDecoration: props.todo.completed ? "line-through" : "none",
+        color: props.todo.completed ? "#888" : "white"
       }}
     >
       <input
         type="checkbox"
-        checked={todo.completed}
-        onchange={() => toggleTodo(todo.id)}
+        checked={props.todo.completed}
+        onchange={() => props.toggleTodo(props.todo.id)}
         style={{ marginRight: "10px", cursor: "pointer" }}
       />
-      <span style={{ flexGrow: "1" }}>{todo.text}</span>
+      <span style={{ flexGrow: "1" }}>{props.todo.text}</span>
       <button
-        onclick={() => deleteTodo(todo.id)}
+        onclick={() => props.deleteTodo(props.todo.id)}
         style={{
           padding: "5px 10px",
           cursor: "pointer",
@@ -57,18 +57,18 @@ type TodoListProps = {
   deleteTodo: (id: number) => void;
 };
 
-function TodoList({ todos, toggleTodo, deleteTodo }: TodoListProps) {
+function TodoList(props: TodoListProps) {
   return () => (
     <ul style={{ listStyleType: "none", padding: "0" }}>
-      {todos.length === 0 ? (
+      {props.todos.length === 0 ? (
         <p style={{ textAlign: "center", color: "#666" }}>No todos yet!</p>
       ) : null}
-      {todos.map(todo => (
+      {props.todos.map(todo => (
         <TodoItem
           key={todo.id}
           todo={todo}
-          toggleTodo={toggleTodo}
-          deleteTodo={deleteTodo}
+          toggleTodo={props.toggleTodo}
+          deleteTodo={props.deleteTodo}
         />
       ))}
     </ul>

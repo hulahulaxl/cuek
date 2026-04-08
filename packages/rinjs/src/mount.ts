@@ -14,7 +14,7 @@ export function renderNode(vnode: VNode): Node {
 
     const ctx: ComponentContext = {
       rerender: () => {
-        if (!renderClosure) return;
+        if (!renderClosure) return currentNode;
         const newVNode = renderClosure();
 
         // Retrieve the stored VNode footprint off the physical DOM node
@@ -27,6 +27,11 @@ export function renderNode(vnode: VNode): Node {
         // Update the footprint to match the newly evaluated layout
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         (currentNode as any)._vnode = newVNode;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (currentNode as any)._componentProps = vnode.props;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        (currentNode as any)._componentRerender = ctx.rerender;
+        return currentNode;
       },
       onMount: cb => {
         mountCallbacks.push(cb);
@@ -49,6 +54,10 @@ export function renderNode(vnode: VNode): Node {
     (currentNode as any)._vnode = initialVNode;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (currentNode as any)._unmount = unmountCallbacks;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (currentNode as any)._componentProps = vnode.props;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (currentNode as any)._componentRerender = ctx.rerender;
 
     // Call mount callbacks safely after the stack clears
     setTimeout(() => {
