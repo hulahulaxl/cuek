@@ -1,10 +1,10 @@
 import { mount, type ComponentContext } from "rinjs";
 
-type Props = { initialValue: number; group?: string };
+type Props = { initialValue: number };
 
-function Counter(props: Props, ctx: ComponentContext) {
+function Counter({ initialValue }: Props, ctx: ComponentContext) {
   // Initialization
-  let count = props.initialValue;
+  let count = initialValue;
   let inputEl: HTMLInputElement;
 
   ctx.onMount(() => {
