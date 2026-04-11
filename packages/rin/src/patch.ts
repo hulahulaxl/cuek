@@ -132,7 +132,7 @@ export function patchDOM(
   const newChildren = newVNode.children;
 
   let oldKeyed: Map<string, { vnode: VNode; node: Node }> | undefined;
-  let oldUnkeyed: ({ vnode: VNode | Node; node: Node } | null)[] | undefined;
+  let oldUnkeyed: ({ vnode: VNode | string; node: Node } | null)[] | undefined;
 
   for (let i = 0; i < oldChildren.length; i++) {
     const oldChild = oldChildren[i];
@@ -162,7 +162,7 @@ export function patchDOM(
   for (let i = 0; i < newChildren.length; i++) {
     const newChild = newChildren[i];
     let matchedNode: Node | undefined;
-    let matchedOldVNode: VNode | Node | undefined;
+    let matchedOldVNode: VNode | string | undefined;
 
     if (
       newChild &&
@@ -193,20 +193,20 @@ export function patchDOM(
     let finalNode: Node;
 
     if (!matchedNode || !matchedOldVNode) {
-      finalNode =
-        newChild instanceof Node ? newChild : renderNode(newChild as VNode);
+      finalNode = renderNode(newChild);
     } else {
-      if (matchedOldVNode instanceof Node || newChild instanceof Node) {
-        if (matchedOldVNode instanceof Text && newChild instanceof Text) {
-          if (matchedOldVNode.nodeValue !== newChild.nodeValue) {
+      if (typeof matchedOldVNode === "string" || typeof newChild === "string") {
+        if (typeof matchedOldVNode === "string" && typeof newChild === "string") {
+          if (matchedOldVNode !== newChild) {
             if (matchedNode instanceof Text) {
-              matchedNode.nodeValue = newChild.nodeValue;
+              matchedNode.nodeValue = newChild;
+            } else {
+              matchedNode = document.createTextNode(newChild);
             }
           }
           finalNode = matchedNode;
         } else {
-          finalNode =
-            newChild instanceof Node ? newChild : renderNode(newChild as VNode);
+          finalNode = renderNode(newChild);
           executeUnmount(matchedNode);
         }
       } else {

@@ -1,19 +1,17 @@
 import type { ComponentContext, VNode } from "./types";
 
-function normalizeChildren(children: unknown[]): (VNode | Node)[] {
-  const result: (VNode | Node)[] = [];
+function normalizeChildren(children: unknown[]): (VNode | string)[] {
+  const result: (VNode | string)[] = [];
   function flatten(arr: unknown[]) {
     for (let i = 0; i < arr.length; i++) {
       const c = arr[i];
       if (Array.isArray(c)) {
         flatten(c);
       } else if (c != null && typeof c !== "boolean") {
-        if (c instanceof Node) {
-          result.push(c);
-        } else if (typeof c === "object" && "type" in c) {
+        if (typeof c === "object" && "type" in c) {
           result.push(c as VNode);
         } else {
-          result.push(document.createTextNode(String(c)));
+          result.push(String(c));
         }
       }
     }
@@ -67,7 +65,6 @@ type Props<K extends ElementType> = DOMProps<K> & {
 // eslint-disable-next-line @typescript-eslint/no-namespace
 export namespace JSX {
   export type Child =
-    | Node
     | Element
     | string
     | number
@@ -93,7 +90,7 @@ export namespace JSX {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     type: ElementType | Component<any>;
     props: Record<string, unknown>;
-    children: (VNode | Node)[];
+    children: (VNode | string)[];
   }
 
   export type IntrinsicElements = {
