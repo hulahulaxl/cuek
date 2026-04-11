@@ -11,7 +11,9 @@ export function eventProxy(this: Element, e: Event) {
   }
 }
 
-export function renderNode(vnode: VNode): Node {
+export function renderNode(vnode: VNode | string): Node {
+  if (typeof vnode === "string") return document.createTextNode(vnode);
+
   if (typeof vnode.type === "function") {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const component = vnode.type as Component<any>;
@@ -124,11 +126,7 @@ export function renderNode(vnode: VNode): Node {
   }
 
   vnode.children.forEach(child => {
-    if (child instanceof Node) {
-      el.appendChild(child);
-    } else {
-      el.appendChild(renderNode(child));
-    }
+    el.appendChild(renderNode(child));
   });
 
   return el;

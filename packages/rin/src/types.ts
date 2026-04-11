@@ -14,5 +14,5 @@ export type VNode = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   type: string | Component<any>;
   props: Record<string, unknown>;
-  children: (VNode | Node)[];
+  children: (VNode | string)[];
 };
