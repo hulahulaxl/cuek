@@ -5,7 +5,7 @@ import type { ComponentContext } from "./types";
 function MyComponent({ name, count }: { name: string; count: number }, ctx: ComponentContext) {
   return () =>
     jsx("div", {
-      className: "container",
+      class: "container",
       style: { color: "red", marginTop: "10px" },
       children: [
         jsx("h1", { children: `Hello ${name}` }),

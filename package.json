@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "build": "pnpm -r run build",
-    "dev:counter-example": "cd examples/counter && npm run dev",
-    "dev:todo-example": "cd examples/todo && npm run dev",
-    "dev:global-example": "cd examples/global-state && npm run dev",
+    "dev:counter-example": "cd examples/counter && pnpm dev",
+    "dev:todo-example": "cd examples/todo && pnpm dev",
+    "dev:global-example": "cd examples/global-state && pnpm dev",
+    "dev:docs": "cd sites/docs && pnpm dev",
     "lint": "eslint",
     "format": "prettier --write .",
     "update-all": "ncu -u"

@@ -50,8 +50,9 @@ type ElementType = keyof HTMLElementTagNameMap;
 
 type DOMProps<K extends ElementType> = Omit<
   Partial<HTMLElementTagNameMap[K]>,
-  "children" | "style"
+  "children" | "style" | "className"
 > & {
+  class?: string;
   style?: Partial<CSSStyleDeclaration> | string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   ref?: (el: any) => void;
