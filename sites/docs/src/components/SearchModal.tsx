@@ -16,12 +16,14 @@ export default function SearchModal(
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let pagefind: any = null;
+  let searchGeneration = 0;
 
   const loadPagefind = async () => {
     if (!pagefind) {
       try {
         const pagefindPath = "/pagefind/pagefind.js";
         pagefind = await import(/* @vite-ignore */ pagefindPath);
+        await pagefind.init();
       } catch {
         // eslint-disable-next-line no-console
         console.warn("Rin SearchModal: pagefind not found. Is it built?");
@@ -81,18 +83,22 @@ export default function SearchModal(
   const handleInput = async (e: Event) => {
     query = (e.target as HTMLInputElement).value;
     if (!query.trim()) {
+      ++searchGeneration; // invalidate any in-flight search
       results = [];
       ctx.rerender();
       return;
     }
 
     if (pagefind) {
+      const generation = ++searchGeneration;
       const search = await pagefind.search(query);
       const data = await Promise.all(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         search.results.slice(0, 5).map((r: any) => r.data())
       );
-      results = Object.values(data);
+      // Discard results from a stale search (user typed again before this resolved)
+      if (generation !== searchGeneration) return;
+      results = data;
       ctx.rerender();
     }
   };
