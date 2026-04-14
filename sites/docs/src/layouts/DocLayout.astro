@@ -3,6 +3,7 @@ import "../styles/global.css";
 import { getCollection, type CollectionEntry } from "astro:content";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
+import SearchModal from "../components/SearchModal";
 import type { NavSection } from "../config/navigation";
 
 interface Props {
@@ -64,5 +65,6 @@ const nav: NavSection[] = Array.from(sectionMap.entries()).map(([catTitle, items
 
     </div>
 
+    <SearchModal client:load />
   </body>
 </html>

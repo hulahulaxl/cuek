@@ -60,6 +60,7 @@ export default function Header(props: HeaderProps, _ctx: ComponentContext) {
         <div class="flex-1 hidden sm:flex justify-center px-6">
           <button
             type="button"
+            onclick={() => window.dispatchEvent(new CustomEvent("toggle-search"))}
             class="w-full max-w-md flex items-center justify-between px-4 py-2 rounded-full border border-zinc-200 bg-zinc-50/50 hover:bg-white text-zinc-500 hover:border-zinc-300 transition-all shadow-sm group"
           >
             <div class="flex items-center gap-3">
