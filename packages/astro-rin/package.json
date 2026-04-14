@@ -14,7 +14,7 @@
   "devDependencies": {
     "astro": "latest",
     "tsup": "latest",
-    "typescript": "latest"
+    "typescript": "^5.9.3"
   },
   "peerDependencies": {
     "astro": ">=4.0.0",

@@ -5,10 +5,16 @@
   "main": "index.js",
   "scripts": {
     "build": "pnpm -r run build",
+    "dev:docs": "cd sites/docs && pnpm dev",
     "dev:counter-example": "cd examples/counter && pnpm dev",
     "dev:todo-example": "cd examples/todo && pnpm dev",
     "dev:global-example": "cd examples/global-state && pnpm dev",
-    "dev:docs": "cd sites/docs && pnpm dev",
+    "build:rin": "cd packages/rin && pnpm build",
+    "build:astro-rin": "cd packages/astro-rin && pnpm build",
+    "build:docs": "cd sites/docs && pnpm build",
+    "build:counter-example": "cd examples/counter && pnpm build",
+    "build:todo-example": "cd examples/todo && pnpm build",
+    "build:global-example": "cd examples/global-state && pnpm build",
     "lint": "eslint",
     "format": "prettier --write .",
     "update-all": "ncu -u"
