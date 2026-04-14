@@ -4,10 +4,7 @@ interface HeaderProps {
   showMenu?: boolean;
 }
 
-export default function Header(
-  props: HeaderProps,
-  _ctx: ComponentContext
-) {
+export default function Header(props: HeaderProps, _ctx: ComponentContext) {
   const openSidebar = () => {
     window.dispatchEvent(new CustomEvent("toggle-sidebar", { detail: true }));
   };
@@ -55,7 +52,7 @@ export default function Header(
             >
               <polygon points="12 2 2 22 22 22" />
             </svg>
-            <span>rin</span>
+            <span>Rin</span>
           </a>
 
           <nav class="hidden md:flex items-center gap-1">
