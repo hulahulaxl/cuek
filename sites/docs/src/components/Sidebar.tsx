@@ -74,7 +74,7 @@ export default function Sidebar(props: SidebarProps, ctx: ComponentContext) {
         <nav class="flex-1 overflow-y-auto px-3 py-6 space-y-6">
           {props.nav.map(section => (
             <div>
-              <p class="px-2 mb-1.5 text-[10px] font-semibold uppercase tracking-widest text-zinc-400">
+              <p class="px-2 mb-1.5 text-xs font-semibold uppercase tracking-wider text-zinc-800">
                 {section.title}
               </p>
               <ul class="space-y-0.5">

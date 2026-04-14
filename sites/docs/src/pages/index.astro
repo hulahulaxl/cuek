@@ -4,29 +4,21 @@ import Layout from "../layouts/Layout.astro";
 <Layout title="Rin — Hyper-minimalist JSX Framework">
   
   {/* Hero */}
-  <section class="flex flex-col items-center text-center px-6 pt-24 pb-20 max-w-screen-xl mx-auto">
-    <a
-      href="https://github.com/hulahulaxl/rin/releases"
-      target="_blank"
-      rel="noreferrer"
-      class="inline-flex items-center gap-2 mb-8 px-3 py-1 rounded-full border border-zinc-200 bg-zinc-50 text-xs font-medium text-zinc-600 hover:border-zinc-300 hover:bg-white transition-colors"
-    >
-      <span class="flex h-1.5 w-1.5 rounded-full bg-zinc-900"></span>
-      v0.2.0 released
-      <svg class="w-3 h-3 ml-0.5 text-zinc-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-      </svg>
-    </a>
+  <section class="flex flex-col items-center text-center px-6 pt-32 pb-24 max-w-screen-xl mx-auto">
+    
+    <svg class="w-24 h-24 text-zinc-900 mb-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <polygon points="12 2 2 22 22 22" />
+    </svg>
 
-    <h1 class="text-5xl md:text-7xl font-bold tracking-tight text-zinc-950 leading-[1.1] max-w-3xl">
-      The web framework that <em class="not-italic text-zinc-400">gets out of the way.</em>
+    <h1 class="text-4xl md:text-5xl font-semibold tracking-tight text-zinc-950 mb-6">
+      Rin
     </h1>
 
-    <p class="mt-6 max-w-xl text-lg text-zinc-500 leading-relaxed">
-      Rin is a hyper-minimalist JSX framework with no Virtual DOM. It renders native HTML strings on the server and surgically patches the DOM on the client.
+    <p class="max-w-2xl text-xl text-zinc-500 leading-relaxed font-light">
+      The hyper-minimalist JSX framework. Server-rendered, client-hydrated, zero virtual DOM.
     </p>
 
-    <div class="mt-8 flex flex-col sm:flex-row items-center gap-3">
+    <div class="mt-10 flex flex-col sm:flex-row items-center gap-4">
       <a
         href="/guide"
         class="inline-flex items-center justify-center px-5 py-2.5 rounded-lg bg-zinc-950 text-white text-sm font-medium hover:bg-zinc-800 transition-colors"

@@ -1,7 +1,11 @@
 import type { ComponentContext } from "rin-lib";
 
+interface HeaderProps {
+  showMenu?: boolean;
+}
+
 export default function Header(
-  _props: Record<string, unknown>,
+  props: HeaderProps,
   _ctx: ComponentContext
 ) {
   const openSidebar = () => {
@@ -13,26 +17,28 @@ export default function Header(
       <div class="w-full max-w-screen-xl mx-auto px-6 flex items-center justify-between gap-6">
         {/* Left: Hamburger + Logo + Nav */}
         <div class="flex items-center gap-6">
-          <button
-            type="button"
-            onclick={openSidebar}
-            class="lg:hidden -ml-1 p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
-            aria-label="Open menu"
-          >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              stroke-width="1.75"
+          {props.showMenu !== false && (
+            <button
+              type="button"
+              onclick={openSidebar}
+              class="lg:hidden -ml-1 p-1.5 rounded-md text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 transition-colors"
+              aria-label="Open menu"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-              />
-            </svg>
-          </button>
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                stroke-width="1.75"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+                />
+              </svg>
+            </button>
+          )}
 
           <a
             href="/"
