@@ -57,7 +57,7 @@ const nav: NavSection[] = Array.from(sectionMap.entries()).map(([catTitle, items
       <Sidebar client:load nav={nav} currentPath={currentPath} />
 
       <!-- Static MDX content — never inside a Rin island -->
-      <main class="flex-1 min-w-0 pl-10 lg:pl-14 pr-2 py-12 max-w-3xl">
+      <main data-pagefind-body class="flex-1 min-w-0 pl-10 lg:pl-14 pr-2 py-12 max-w-3xl">
         <article>
           <slot />
         </article>

@@ -14,15 +14,16 @@ export default function SearchModal(
   let query = "";
   let results: SearchResult[] = [];
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let pagefind: any = null;
 
   const loadPagefind = async () => {
     if (!pagefind) {
       try {
         const pagefindPath = "/pagefind/pagefind.js";
-        // @ts-ignore
         pagefind = await import(/* @vite-ignore */ pagefindPath);
-      } catch (e) {
+      } catch {
+        // eslint-disable-next-line no-console
         console.warn("Rin SearchModal: pagefind not found. Is it built?");
       }
     }
@@ -88,6 +89,7 @@ export default function SearchModal(
     if (pagefind) {
       const search = await pagefind.search(query);
       const data = await Promise.all(
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         search.results.slice(0, 5).map((r: any) => r.data())
       );
       results = Object.values(data);
@@ -157,7 +159,7 @@ export default function SearchModal(
                     </p>
                     <p
                       class="text-xs text-zinc-500 line-clamp-2"
-                      set:innerhtml={result.excerpt}
+                      innerHTML={result.excerpt}
                     />
                   </a>
                 ))}
