@@ -93,13 +93,15 @@ export default function Header(props: HeaderProps, _ctx: ComponentContext) {
           <nav class="hidden md:flex items-center gap-1.5">
             {[
               { label: "Home", href: "/" },
-              { label: "Guide", href: "/guide" },
-              { label: "API", href: "/api" }
+              { label: "Guide", href: "/guide/introduction" },
+              { label: "API", href: "/api/jsx" }
             ].map(({ label, href }) => {
               const active =
                 href === "/"
                   ? props.currentPath === "/" || props.currentPath === ""
-                  : props.currentPath?.startsWith(href);
+                  : props.currentPath?.startsWith(
+                      href.split("/").slice(0, 2).join("/")
+                    );
 
               return (
                 <a

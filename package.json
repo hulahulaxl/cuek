@@ -16,6 +16,7 @@
     "build:counter-example": "cd examples/counter && pnpm build",
     "build:todo-example": "cd examples/todo && pnpm build",
     "build:global-example": "cd examples/global-state && pnpm build",
+    "preview:docs": "cd sites/docs && pnpm preview",
     "lint": "eslint",
     "format": "prettier --write .",
     "test": "vitest run",

@@ -21,7 +21,7 @@ export interface NavSection {
 }
 
 const { title, section } = Astro.props;
-const currentPath = Astro.url.pathname;
+const currentPath = Astro.url.pathname.replace(/\/$/, "");
 
 const allEntries = await getCollection("docs", ({ id }: CollectionEntry<"docs">) =>
   id.startsWith(`${section}/`)
