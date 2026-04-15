@@ -11,7 +11,10 @@ function normalizeChildren(children: unknown[]): (VNode | string)[] {
         if (typeof c === "object" && "type" in c) {
           result.push(c as VNode);
         } else {
-          result.push(String(c));
+          const str = String(c);
+          // Skip empty strings — JS && short-circuit returns "" for falsy queries
+          // e.g. `query && results.length > 0 && <div>` → "" when query=""
+          if (str !== "") result.push(str);
         }
       }
     }

@@ -134,12 +134,18 @@ export function patchDOM(
   const oldChildren = oldVNode.children;
   const newChildren = newVNode.children;
 
+  // Snapshot DOM children ONCE before either loop runs.
+  // el.childNodes is a live NodeList — any insertion, removal or replaceChild
+  // during patching will shift indices. Using a frozen array in both loops
+  // keeps the VNode↔DOM pairing consistent throughout.
+  const domSnapshot = Array.from(el.childNodes);
+
   let oldKeyed: Map<string, { vnode: VNode; node: Node }> | undefined;
   let oldUnkeyed: ({ vnode: VNode | string; node: Node } | null)[] | undefined;
 
   for (let i = 0; i < oldChildren.length; i++) {
     const oldChild = oldChildren[i];
-    const childNode = el.childNodes[i];
+    const childNode = domSnapshot[i];  // ← use snapshot, not live NodeList
     if (!childNode) continue;
 
     if (
@@ -209,8 +215,15 @@ export function patchDOM(
           }
           finalNode = matchedNode;
         } else {
+          // Old was a string/text node, new is an element (or vice versa).
+          // executeUnmount only fires lifecycle callbacks — it does NOT remove
+          // the node from the DOM. We must explicitly remove it here or it
+          // becomes an invisible ghost that corrupts future VNode/DOM pairing.
           finalNode = renderNode(newChild, isNodeSvg);
           executeUnmount(matchedNode);
+          if (matchedNode.parentNode) {
+            matchedNode.parentNode.removeChild(matchedNode);
+          }
         }
       } else {
         finalNode = patchDOM(
@@ -222,9 +235,23 @@ export function patchDOM(
       }
     }
 
-    const referenceNode = el.childNodes[i] || null;
+    // Use the snapshot index so DOM shifts from earlier insertBefore calls
+    // don't move the reference node for this slot.
+    // Guard: if patchDOM replaced the node at slot i via replaceChild, the
+    // snapshot entry is now detached. In that case fall back to null (append).
+    const snapshotRef = domSnapshot[i] ?? null;
+    const referenceNode =
+      snapshotRef?.parentNode === el ? snapshotRef : null;
+
     if (referenceNode !== finalNode) {
-      el.insertBefore(finalNode, referenceNode);
+      // Only call insertBefore if:
+      //  a) finalNode is not yet in el (newly created) - always needs inserting, OR
+      //  b) we have a non-null reference node to order against
+      // Skip when referenceNode is null AND finalNode is already in el:
+      //   that means replaceChild already placed it at the correct slot.
+      if (finalNode.parentNode !== el || referenceNode !== null) {
+        el.insertBefore(finalNode, referenceNode);
+      }
     }
   }
 
