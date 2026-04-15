@@ -1,0 +1,85 @@
+---
+title: Component
+description: Let's build your first component.
+category: Core Concepts
+order: 3
+---
+
+# Your First Application
+
+Now that you have survived the installation, it is time to actually build something. Rin components are just functions that return a function. It is that simple. If you can handle a basic JavaScript closure, you can handle Rin.
+
+## The Example
+
+We are going to build a counter. It is not exactly original, but it perfectly illustrates how Rin handles props, state, and updates without any framework magic.
+
+### index.html
+
+You need a place for your app to live. A simple `div` with an `id` is all you need.
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+  <body>
+    <div id="app"></div>
+    <!-- Your bundled JavaScript entry point -->
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
+```
+
+### Counter.tsx
+
+This is your actual component. Notice the total lack of `useState` or complex hooks.
+
+```tsx
+import { ComponentContext } from "rin-lib";
+
+interface Props {
+  title: string;
+}
+
+export default function Counter({ title }: Props, ctx: ComponentContext) {
+  // This is your state. It is just a variable. No hooks. No proxies.
+  let count = 0;
+
+  const increment = () => {
+    count++;
+    // We tell the UI to update explicitly.
+    ctx.rerender();
+  };
+
+  return () => (
+    <div class="counter">
+      <h2>{title}</h2>
+      <p>Current count: {count}</p>
+      <button onclick={increment}>Increment</button>
+    </div>
+  );
+}
+```
+
+### main.tsx
+
+The entry point that ties it all together.
+
+```tsx
+import { mount } from "rin-lib";
+import Counter from "./Counter";
+
+const root = document.getElementById("app");
+if (root) {
+  // Mount the component to the DOM.
+  mount(root, <Counter title="Rin Counter" />);
+}
+```
+
+## How it works
+
+There are three things you need to understand here. They are simple but fundamental to how Rin works.
+
+1.  **Props**: They are just the first argument to your function. They do not magically trigger updates because nothing in Rin is magical.
+2.  **State**: It is literally just a variable inside your function's scope. since your component returns a function (the render function), it forms a natural closure over that variable. It stays alive as long as the component is mounted.
+3.  **Rerendering**: When you change your data, the DOM has no idea. You have to tell it by calling `ctx.rerender()`. This calls your render function again, compares the result to the previous one, and patches only the parts of the DOM that actually changed.
+
+It is explicit. It is predictable. And it is fast because it does not waste time guesssing what you want.
