@@ -2,6 +2,7 @@ import type { ComponentContext } from "rin-lib";
 
 interface HeaderProps {
   showMenu?: boolean;
+  currentPath?: string;
 }
 
 export default function Header(props: HeaderProps, _ctx: ComponentContext) {
@@ -11,7 +12,7 @@ export default function Header(props: HeaderProps, _ctx: ComponentContext) {
 
   return () => (
     <header class="sticky top-0 z-50 w-full h-14 border-b border-zinc-200 bg-white/90 backdrop-blur-sm flex items-center">
-      <div class="w-full max-w-screen-xl mx-auto px-6 flex items-center justify-between gap-6">
+      <div class="w-full max-w-7xl mx-auto px-6 flex items-center justify-between gap-6">
         {/* Left: Hamburger + Logo + Nav */}
         <div class="flex items-center gap-6">
           {props.showMenu !== false && (
@@ -60,7 +61,9 @@ export default function Header(props: HeaderProps, _ctx: ComponentContext) {
         <div class="flex-1 hidden sm:flex justify-center px-6">
           <button
             type="button"
-            onclick={() => window.dispatchEvent(new CustomEvent("toggle-search"))}
+            onclick={() =>
+              window.dispatchEvent(new CustomEvent("toggle-search"))
+            }
             class="w-full max-w-md flex items-center justify-between px-4 py-2 rounded-full border border-zinc-200 bg-zinc-50/50 hover:bg-white text-zinc-500 hover:border-zinc-300 transition-all shadow-sm group"
           >
             <div class="flex items-center gap-3">
@@ -88,24 +91,29 @@ export default function Header(props: HeaderProps, _ctx: ComponentContext) {
         {/* Right: Nav + Divider + GitHub */}
         <div class="flex items-center gap-3 md:gap-5">
           <nav class="hidden md:flex items-center gap-1.5">
-            <a
-              href="/"
-              class="px-3 py-1.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors"
-            >
-              Home
-            </a>
-            <a
-              href="/guide"
-              class="px-3 py-1.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors"
-            >
-              Guide
-            </a>
-            <a
-              href="/api"
-              class="px-3 py-1.5 text-sm text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100 rounded-md transition-colors"
-            >
-              API
-            </a>
+            {[
+              { label: "Home", href: "/" },
+              { label: "Guide", href: "/guide" },
+              { label: "API", href: "/api" }
+            ].map(({ label, href }) => {
+              const active =
+                href === "/"
+                  ? props.currentPath === "/" || props.currentPath === ""
+                  : props.currentPath?.startsWith(href);
+
+              return (
+                <a
+                  href={href}
+                  class={`px-3 py-1.5 text-sm rounded-md transition-colors ${
+                    active
+                      ? "text-zinc-900 bg-zinc-100 font-medium"
+                      : "text-zinc-500 hover:text-zinc-900 hover:bg-zinc-100"
+                  }`}
+                >
+                  {label}
+                </a>
+              );
+            })}
           </nav>
 
           <div class="hidden md:block w-px h-4 bg-zinc-200" />

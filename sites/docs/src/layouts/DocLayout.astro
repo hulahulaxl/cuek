@@ -4,11 +4,20 @@ import { getCollection, type CollectionEntry } from "astro:content";
 import Header from "../components/Header";
 import Sidebar from "../components/Sidebar";
 import SearchModal from "../components/SearchModal";
-import type { NavSection } from "../config/navigation";
 
 interface Props {
   title: string;
   section: "guide" | "api";
+}
+
+export interface NavItem {
+  title: string;
+  href: string;
+}
+
+export interface NavSection {
+  title: string;
+  items: NavItem[];
 }
 
 const { title, section } = Astro.props;
@@ -48,7 +57,7 @@ const nav: NavSection[] = Array.from(sectionMap.entries()).map(([catTitle, items
   <body class="bg-white text-zinc-900 min-h-screen antialiased selection:bg-zinc-900 selection:text-white">
 
     <!-- Sticky Header island -->
-    <Header client:load />
+    <Header client:load currentPath={currentPath} />
 
     <!-- Page body: sidebar + content -->
     <div class="w-full max-w-screen-xl mx-auto px-6 flex items-start">
