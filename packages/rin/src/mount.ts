@@ -102,6 +102,11 @@ export function renderNode(vnode: VNode | string, isSvg = false): Node {
       continue;
     }
 
+    if (key === "innerHTML" && typeof value === "string") {
+      el.innerHTML = value;
+      continue;
+    }
+
     if (key === "style" && typeof value === "object") {
       Object.assign(el.style, value);
       continue;

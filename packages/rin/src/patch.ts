@@ -16,6 +16,8 @@ function updateProps(
         if (anyEl._rinListeners) {
           anyEl._rinListeners[key.slice(2).toLowerCase()] = undefined;
         }
+      } else if (key === "innerHTML") {
+        el.innerHTML = "";
       } else if (key === "style") {
         el.style.cssText = "";
       } else {
@@ -43,6 +45,11 @@ function updateProps(
 
     if (key === "ref" && typeof newValue === "function") {
       setTimeout(() => newValue(el), 0);
+      continue;
+    }
+
+    if (key === "innerHTML" && typeof newValue === "string") {
+      if (oldValue !== newValue) el.innerHTML = newValue;
       continue;
     }
 
