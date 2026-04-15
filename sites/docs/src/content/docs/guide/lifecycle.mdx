@@ -26,13 +26,13 @@ This runs once when the component is being removed from the DOM. If you forget t
 Here is a complete application that uses both hooks to manage a simple interval. Notice how we do not need a complex array of dependencies to tell Rin when to stop.
 
 ```tsx
-import { onMount, onUnmount, ComponentContext } from "rin-lib";
+import { ComponentContext } from "rin-lib";
 
 export default function Timer({}, ctx: ComponentContext) {
   let seconds = 0;
   let interval: any;
 
-  onMount(() => {
+  ctx.onMount(() => {
     console.log("Timer mounted. Starting interval.");
     interval = setInterval(() => {
       seconds++;
@@ -41,7 +41,7 @@ export default function Timer({}, ctx: ComponentContext) {
     }, 1000);
   });
 
-  onUnmount(() => {
+  ctx.onUnmount(() => {
     console.log("Timer unmounting. Cleaning up.");
     clearInterval(interval);
   });
@@ -57,6 +57,6 @@ export default function Timer({}, ctx: ComponentContext) {
 
 ## How to use it
 
-You just call `onMount` and `onUnmount` inside your component function. Since the component function only runs once when it is created, these hooks are registered exactly once.
+You just call `ctx.onMount` and `ctx.onUnmount` inside your component function. Since the component function only runs once when it is created, these hooks are registered exactly once.
 
 There is no "re-running logic" every time the UI updates. The render function (the one you return) keeps things fast, while the lifecycle hooks keep things organized. No magic. No headache.
