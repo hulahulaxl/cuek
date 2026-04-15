@@ -7,22 +7,64 @@ order: 1
 
 # Introduction
 
-Rin is a hyper-minimalist JSX framework designed for developers who value performance, simplicity, and standard web technologies.
+Rin is a hyper-minimalist JSX library for developers who are officially done with the reactivity circus. We stripped away the magic, the proxies, and the "why is my component rerendering 50 times?" headaches.
 
-## Why Rin?
+## The Reactivity Trap
 
-In a world of increasingly complex web frameworks, Rin takes a step back. It removes the Virtual DOM entirely, opting for a direct-to-DOM approach that is both faster and easier to reason about.
+Every "modern" JS framework is obsessed with one thing: Reactivity. They promise to make your life easier by syncing your state to your UI. Sounds great, right?
+
+The reality is a nightmare. Reactivity makes it easy to update a list, but it makes it a total pain to manage your actual data.
+
+In React, you have to wrap your life in hooks. `useState`, `useEffect`, `useCallback`... it never ends. You end up spending more time fighting the framework's rules than actually writing your app. Then, because the magic is too confusing, you install a massive state management library to try and fix the the mess the framework made in the first place.
+
+### The Rin Way
+
+Rin is different because we simply stop caring about reactivity. We trade the "magic" for absolute control.
+
+- **No magic hooks**: You want a variable? Use `let`.
+- **Plain JavaScript**: It's just code. No proxies. No observers.
+- **Explicit updates**: You change the data, then you call `ctx.rerender()`. You are the boss.
+
+Every React developer has done it. You have reached for that one pattern in a moment of pure desperation. If you have ever felt dirty for using a "force update" in React to fix a bug, welcome home. Rin is built on that exact feeling.
+
+In React, you have to do this embarrassing dance just to refresh the UI manually:
 
 ```tsx
-function Hello({ name }) {
-  return () => <h1>Hello, {name}!</h1>;
+// The React "I give up" pattern
+const [, forceUpdate] = useReducer(x => x + 1, 0);
+
+const handleUpdate = () => {
+  someGlobalCounter++;
+  forceUpdate(); // Gross.
+};
+```
+
+In Rin, explicit updates are the first-class residents. No hacks required.
+
+```tsx
+function Counter({}, ctx) {
+  // Look at this. A normal variable. No hooks. No sadness.
+  let count = 0;
+
+  return () => (
+    <div>
+      <p>Count: {count}</p>
+      {/* You change the data, then you tell Rin to update. Explicit. Brutal. */}
+      <button
+        onclick={() => {
+          count++;
+          ctx.rerender();
+        }}
+      >
+        Increment
+      </button>
+    </div>
+  );
 }
 ```
 
-### Key Features
+## Why keep JSX?
 
-- **Zero Virtual DOM**: Updates are patched directly to the native DOM.
-- **Vanilla JS Aligned**: No magic mapping of attributes. Use `class` instead of `className`.
-- **Astro Ready**: Built to work seamlessly as an Astro integration for highly performant documentation and landing pages.
+We think React was right about one thing: **JSX**.
 
-Next, let's look at [Getting Started](/guide/getting-started).
+JSX is the best way to describe a UI in JavaScript, period. We kept the beautiful syntax but ripped out the bloated engine underneath. Now you can write expressive components without feeling like you're carrying a 100lb framework on your back.
