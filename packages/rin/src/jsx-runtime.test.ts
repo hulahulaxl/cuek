@@ -19,12 +19,9 @@ describe("jsx-runtime", () => {
     }) as VNode;
 
     expect(vnode.children.length).toBe(3);
-    // @ts-ignore
-    expect(vnode.children[0].type).toBe("li");
-    // @ts-ignore
-    expect(vnode.children[1].type).toBe("li");
-    // @ts-ignore
-    expect(vnode.children[2].type).toBe("li");
+    expect((vnode.children[0] as VNode).type).toBe("li");
+    expect((vnode.children[1] as VNode).type).toBe("li");
+    expect((vnode.children[2] as VNode).type).toBe("li");
   });
 
   it("handles Fragment by extracting children", () => {
