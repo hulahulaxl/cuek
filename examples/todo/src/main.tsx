@@ -79,7 +79,7 @@ function TodoList(props: TodoListProps) {
 // <TodoApp />
 function TodoApp(_props: Record<string, unknown>, ctx: ComponentContext) {
   let todos: Todo[] = [
-    { id: 1, text: "Learn RinJS", completed: true },
+    { id: 1, text: "Learn Cuek", completed: true },
     { id: 2, text: "Build a Todo App", completed: false }
   ];
   let inputEl: HTMLInputElement | null = null;
