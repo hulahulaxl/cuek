@@ -1,4 +1,4 @@
-import { mount, type ComponentContext } from "rin-lib";
+import { mount, type ComponentContext } from "cuek";
 
 type Todo = {
   id: number;
@@ -120,7 +120,7 @@ function TodoApp(_props: Record<string, unknown>, ctx: ComponentContext) {
         boxShadow: "0 4px 6px rgba(0,0,0,0.3)"
       }}
     >
-      <h1>Rin Todo Test</h1>
+      <h1>Cuek Todo Test</h1>
 
       <div style={{ display: "flex", marginBottom: "20px" }}>
         <input
