@@ -5,6 +5,7 @@ import cuek from "astro-cuek";
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://cuek.hulahula.dev",
   trailingSlash: "never",
   integrations: [cuek(), mdx()],
   markdown: {
