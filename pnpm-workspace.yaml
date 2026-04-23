@@ -2,4 +2,6 @@ packages:
   - packages/*
   - examples/*
   - sites/*
-
+allowBuilds:
+  esbuild: true
+  workerd: true
